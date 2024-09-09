@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="product1" class="com.hohuuan.Product" scope="prototype">
+        <property name="id" value="1"/>
+        <property name="name" value="Iphone 15"/>
+        <property name="color" value="Blue"/>
+        <property name="price" value="1500"/>
+        <property name="country" value="USA"/>
+    </bean>
+
+    <bean id="product2" class="com.hohuuan.Product" scope="prototype">
+        <constructor-arg name="id" value="2"/>
+        <constructor-arg name="name" value="Iphone 15 Pro"/>
+        <constructor-arg name="color" value="Gray"/>
+        <constructor-arg name="price" value="1800"/>
+        <constructor-arg name="country" value="USA"/>
+    </bean>
+
+
+    <bean id="product3" class="com.hohuuan.Product" scope="singleton">
+        <property name="id" value="3"/>
+        <property name="name" value="Iphone 15 Pro Max"/>
+        <property name="color" value="Pacific Blue"/>
+        <property name="price" value="2000"/>
+        <property name="country" value="USA"/>
+    </bean>
+</beans>

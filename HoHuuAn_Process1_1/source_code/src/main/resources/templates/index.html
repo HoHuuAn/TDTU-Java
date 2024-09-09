@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="utf-8"/>
+    <title>Product Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript">
+        function clearSearch() {
+            window.location = "[[@{/}]]";
+        }
+    </script>
+</head>
+<body>
+<div align="center">
+    <div sec:authorize="isAuthenticated()">
+        Welcome <b><span sec:authentication="name">Username</span></b>
+        <i><span sec:authentication="principal.authorities">Roles</span></i>
+        <form th:action="@{/logout}" method="post">
+            <input class="btn btn-danger" type="submit" value="Logout" />
+        </form>
+    </div>
+    <h1 class="mt-5">Product List</h1>
+    <div sec:authorize="hasAnyAuthority('ROLE_EDITOR', 'ROLE_ADMIN')">
+        <a class="btn btn-primary mt-3" href="/new">Create New Product</a>
+    </div>
+    <br/><br/>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <form th:action="@{/}">
+                <div class=" input-group  mb-3">
+                    <input type="text" class="form-control" name="keyword" id="keyword" th:value="${keyword}" required />
+                    <button class="btn btn-primary" type="submit">Search</button>
+                    <button class="btn btn-secondary" type="button" onclick="clearSearch()">Clear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>
+                            <a th:href="@{'/page/' + ${currentPage} + '?sortField=id&sortDir=' + ${reverseSortDir}}">Product ID</a>
+                        </th>
+                        <th>
+                            <a th:href="@{'/page/' + ${currentPage} + '?sortField=name&sortDir=' + ${reverseSortDir}}">Name</a>
+                        </th>
+                        <th>
+                            <a th:href="@{'/page/' + ${currentPage} + '?sortField=brand&sortDir=' + ${reverseSortDir}}">Brand</a>
+                        </th>
+                        <th>
+                            <a th:href="@{'/page/' + ${currentPage} + '?sortField=madein&sortDir=' + ${reverseSortDir}}">Made In</a>
+                        </th>
+                        <th>
+                            <a th:href="@{'/page/' + ${currentPage} + '?sortField=price&sortDir=' + ${reverseSortDir}}">Price</a>
+                        </th>
+                        <th sec:authorize="hasAnyAuthority('ROLE_ADMIN', 'ROLE_EDITOR')">
+                            Action
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="product : ${listProduct}">
+                        <td th:text="${product.id}">Product ID</td>
+                        <td th:text="${product.name}">Name</td>
+                        <td th:text="${product.brand}">Brand</td>
+                        <td th:text="${product.madein}">Made in</td>
+                        <td th:text="${product.price}">Price</td>
+                        <td sec:authorize="hasAnyAuthority('ROLE_ADMIN', 'ROLE_EDITOR')">
+                            <a sec:authorize="hasAnyAuthority('ROLE_ADMIN', 'ROLE_EDITOR')" th:href="@{'/edit/' + ${product.id}}" class="btn btn-primary">Edit</a>
+                            &nbsp;&nbsp;&nbsp;
+                            <a sec:authorize="hasAuthority('ROLE_ADMIN')" th:href="@{'/delete/' + ${product.id}}" class="btn btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="pagination justify-content-center">
+        <ul class="pagination">
+            <li th:if="${currentPage > 1}" class="page-item">
+                <a class="page-link" th:href="@{'/page/1?sortField='+${sortField} + '&sortDir=' + ${sortDir}}">First</a>
+            </li>
+            <li th:unless="${currentPage > 1}" class="page-item disabled">
+                <span class="page-link">First</span>
+            </li>
+
+            <li th:if="${currentPage > 1}" class="page-item">
+                <a class="page-link" th:href="@{'/page/' + ${currentPage - 1} + '?sortField='+${sortField} + '&sortDir=' + ${sortDir}}">Previous</a>
+            </li>
+            <li th:unless="${currentPage > 1}" class="page-item disabled">
+                <span class="page-link">Previous</span>
+            </li>
+
+            <th:block th:each="i: ${#numbers.sequence(1, totalPages)}">
+                <li th:class="${currentPage == i} ? 'page-item active' : 'page-item'">
+                    <a class="page-link" th:href="@{'/page/' + ${i} + '?sortField='+${sortField} + '&sortDir=' + ${sortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">[[${i}]]</a>
+                </li>
+            </th:block>
+
+            <li th:if="${currentPage < totalPages}" class="page-item">
+                <a class="page-link" th:href="@{'/page/' + ${currentPage + 1} + '?sortField='+${sortField} + '&sortDir=' + ${sortDir}}">Next</a>
+            </li>
+            <li th:unless="${currentPage < totalPages}" class="page-item disabled">
+                <span class="page-link">Next</span>
+            </li>
+
+            <li th:if="${currentPage < totalPages}" class="page-item">
+                <a class="page-link" th:href="@{'/page/' + ${totalPages} + '?sortField='+${sortField} + '&sortDir=' + ${sortDir}}">Last</a>
+            </li>
+            <li th:unless="${currentPage < totalPages}" class="page-item disabled">
+                <span class="page-link">Last</span>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
